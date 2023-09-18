@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:project2/home/edit_task_screen.dart';
 import 'package:project2/home/home_screen.dart';
 import 'package:project2/my_theme.dart';
 import 'package:project2/providers/app_config_provider.dart';
@@ -24,6 +25,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => HomeScreen(),
+        EditTaskScreen.routeName: (context) => EditTaskScreen(),
       },
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.darkTheme,

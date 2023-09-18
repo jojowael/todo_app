@@ -13,9 +13,14 @@
 "add_new_Task":"إضافة ههام",
 "enter_Task_Title":"اضف عنوان المهمة",
 "enter_Task_Description":"ادخل الوصف",
+"enter_Task_Details":"ادخل شرح المهمة",
 "delete":"إلغاء",
 "select_Date":"التاريخ",
 "add":"أضف",
+"edit_task":"تعديل المهمة",
+"this_is_title":"عنوان",
+"task_details":"شرح المهمة",
+"save_changes":"حفظ التغيير",
 "please_enter_task_title":"من فضلك أدخل عنوان المهمة",
 "please_enter_task_description":"من فضلك أدخل مواصفات المهمة"
 

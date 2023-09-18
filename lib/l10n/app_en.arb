@@ -13,9 +13,14 @@
 "add_new_Task":"Add new Task",
 "enter_Task_Title":"Enter Task Title",
 "enter_Task_Description":"Enter Task Description",
+"enter_Task_Details":"Enter Task Details",
 "select_Date":"Select Date",
 "delete":"Delete",
 "add":"Add",
+"edit_task":"Edit Task",
+"this_is_title":"This is Title",
+"task_details":"Task details",
+"save_changes":"Save Changes",
 "please_enter_task_title":"Please Enter Task Title",
 "please_enter_task_description":"Please Enter Task Description"
 
