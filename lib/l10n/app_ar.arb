@@ -1,0 +1,22 @@
+{
+"toDoList":"عمل قائمة",
+"task_title":"عنوان المهمة",
+"des":"شرح",
+"task_list":"لستة المهام",
+"settings":"الاعدادات",
+"theme":"النمط",
+"english":"انجليزية",
+"arabic":"عربية",
+"light":"نور",
+"dark":"مظلم",
+"language":"اللغة",
+"add_new_Task":"إضافة ههام",
+"enter_Task_Title":"اضف عنوان المهمة",
+"enter_Task_Description":"ادخل الوصف",
+"delete":"إلغاء",
+"select_Date":"التاريخ",
+"add":"أضف",
+"please_enter_task_title":"من فضلك أدخل عنوان المهمة",
+"please_enter_task_description":"من فضلك أدخل مواصفات المهمة"
+
+}

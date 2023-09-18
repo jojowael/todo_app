@@ -1,0 +1,22 @@
+{
+"toDoList":"ToDoList",
+"task_title":"Task Title",
+"des":"Description",
+"task_list":"Task List",
+"settings":"Settings",
+"theme":"Themeing",
+"english":"English",
+"arabic":"Arabic",
+"light":"Light",
+"dark":"Dark",
+"language":"Language",
+"add_new_Task":"Add new Task",
+"enter_Task_Title":"Enter Task Title",
+"enter_Task_Description":"Enter Task Description",
+"select_Date":"Select Date",
+"delete":"Delete",
+"add":"Add",
+"please_enter_task_title":"Please Enter Task Title",
+"please_enter_task_description":"Please Enter Task Description"
+
+}
