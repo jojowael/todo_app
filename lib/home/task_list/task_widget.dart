@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 import '../../my_theme.dart';
+import '../../providers/app_config_provider.dart';
 import '../edit_task_screen.dart';
 
 class TaskWidgetItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<AppConfigProvider>(context);
     return Slidable(
       // The start action pane is the one at the left or the top side.
       startActionPane: ActionPane(
@@ -31,7 +34,10 @@ class TaskWidgetItem extends StatelessWidget {
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.all(12),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: MyTheme.whiteColor),
+          borderRadius: BorderRadius.circular(15),
+          color:
+              provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
+        ),
         child: InkWell(
           onTap: () {
             Navigator.pushNamed(context, EditTaskScreen.routeName);
@@ -46,25 +52,32 @@ class TaskWidgetItem extends StatelessWidget {
               ),
               Expanded(
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.task_title,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      AppLocalizations.of(context)!.task_title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(color: Theme.of(context).primaryColor),
+                      AppLocalizations.of(context)!.des,
+                      style: provider.isDarkMode()
+                          ? Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: MyTheme.whiteColor)
+                          : Theme.of(context).textTheme.titleSmall,
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(AppLocalizations.of(context)!.des,
-                        style: Theme.of(context).textTheme.titleSmall),
                   )
-                ],
-              )),
+                    ],
+                  )),
               Container(
                 padding: EdgeInsets.symmetric(
                   vertical: 7,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:project2/my_theme.dart';
+import 'package:project2/providers/app_config_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditTaskScreen extends StatefulWidget {
   static const String routeName = 'edit_task_screen';
@@ -16,6 +18,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<AppConfigProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -29,7 +32,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           vertical: MediaQuery.of(context).size.height * 0.06,
         ),
         decoration: BoxDecoration(
-            color: MyTheme.whiteColor, borderRadius: BorderRadius.circular(15)),
+            color:
+                provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
+            borderRadius: BorderRadius.circular(15)),
         padding: EdgeInsets.all(12),
         child: SingleChildScrollView(
           child: Column(
@@ -38,7 +43,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   AppLocalizations.of(context)!.edit_task,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: provider.isDarkMode()
+                      ? Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(color: MyTheme.whiteColor)
+                      : Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               Form(
@@ -57,9 +67,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText:
-                                  AppLocalizations.of(context)!.this_is_title),
-                          style: Theme.of(context).textTheme.titleSmall,
+                            hintText:
+                                AppLocalizations.of(context)!.this_is_title,
+                            hintStyle: provider.isDarkMode()
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: MyTheme.whiteColor)
+                                : Theme.of(context).textTheme.titleSmall,
+                          ),
                         ),
                       ),
                       Padding(
@@ -75,8 +91,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           decoration: InputDecoration(
                             hintText:
                                 AppLocalizations.of(context)!.task_details,
+                            hintStyle: provider.isDarkMode()
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: MyTheme.whiteColor)
+                                : Theme.of(context).textTheme.titleSmall,
                           ),
-                          style: Theme.of(context).textTheme.titleSmall,
                           maxLines: 4,
                         ),
                       ),
@@ -84,7 +105,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           AppLocalizations.of(context)!.select_Date,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: provider.isDarkMode()
+                              ? Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: MyTheme.whiteColor)
+                              : Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
                       InkWell(
