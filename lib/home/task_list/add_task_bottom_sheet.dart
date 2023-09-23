@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+
+import '../../my_theme.dart';
+import '../../providers/app_config_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   @override
@@ -12,14 +16,21 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<AppConfigProvider>(context);
     return Container(
+      color: provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
       padding: EdgeInsets.all(12),
       child: SingleChildScrollView(
         child: Column(
           children: [
             Text(
               AppLocalizations.of(context)!.add_new_Task,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: provider.isDarkMode()
+                  ? Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: MyTheme.whiteColor)
+                  : Theme.of(context).textTheme.titleMedium,
             ),
             Form(
                 key: formKey,
@@ -37,8 +48,15 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                           return null;
                         },
                         decoration: InputDecoration(
-                            hintText:
-                                AppLocalizations.of(context)!.enter_Task_Title),
+                          hintText:
+                              AppLocalizations.of(context)!.enter_Task_Title,
+                          hintStyle: provider.isDarkMode()
+                              ? Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: MyTheme.whiteColor)
+                              : Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
                     ),
                     Padding(
@@ -52,8 +70,15 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                           return null;
                         },
                         decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!
-                                .enter_Task_Description),
+                          hintText: AppLocalizations.of(context)!
+                              .enter_Task_Description,
+                          hintStyle: provider.isDarkMode()
+                              ? Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: MyTheme.whiteColor)
+                              : Theme.of(context).textTheme.titleSmall,
+                        ),
                         maxLines: 4,
                       ),
                     ),
@@ -61,7 +86,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         AppLocalizations.of(context)!.select_Date,
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: provider.isDarkMode()
+                            ? Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(color: MyTheme.whiteColor)
+                            : Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
                     InkWell(
@@ -73,7 +103,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         child: Text(
                           '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: provider.isDarkMode()
+                              ? Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: MyTheme.whiteColor)
+                              : Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
                     ),
