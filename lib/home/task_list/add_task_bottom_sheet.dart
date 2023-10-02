@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:project2/firebase_utils.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/task.dart';
 import '../../my_theme.dart';
 import '../../providers/app_config_provider.dart';
 
@@ -13,10 +15,13 @@ class AddTaskBottomSheet extends StatefulWidget {
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   DateTime selectedDate = DateTime.now();
   var formKey = GlobalKey<FormState>();
+  String title = '';
+  String description = '';
+  late AppConfigProvider provider;
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<AppConfigProvider>(context);
+    provider = Provider.of<AppConfigProvider>(context);
     return Container(
       color: provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
       padding: EdgeInsets.all(12),
@@ -40,6 +45,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        onChanged: (text) {
+                          title = text;
+                        },
                         validator: (text) {
                           if (text == null || text.isEmpty) {
                             return AppLocalizations.of(context)!
@@ -52,9 +60,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                               AppLocalizations.of(context)!.enter_Task_Title,
                           hintStyle: provider.isDarkMode()
                               ? Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(color: MyTheme.whiteColor)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: MyTheme.whiteColor)
                               : Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
@@ -62,6 +70,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        onChanged: (text) {
+                          description = text;
+                        },
                         validator: (text) {
                           if (text == null || text.isEmpty) {
                             return AppLocalizations.of(context)!
@@ -79,7 +90,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                                   .copyWith(color: MyTheme.whiteColor)
                               : Theme.of(context).textTheme.titleSmall,
                         ),
-                        maxLines: 4,
+                        maxLines: 2,
                       ),
                     ),
                     Padding(
@@ -143,6 +154,17 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   void addTask() {
     if (formKey.currentState?.validate() == true) {
       //add task to firebase
+      Task task = Task(
+        title: title,
+        description: description,
+        dateTime: selectedDate,
+      );
+      FirebaseUtils.addTaskToFireStore(task)
+          .timeout(Duration(milliseconds: 500), onTimeout: () {
+        print('todo added successful');
+        provider.getAllTasksFromFireStore();
+        Navigator.pop(context);
+      });
     }
   }
 }
