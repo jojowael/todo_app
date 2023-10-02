@@ -2,17 +2,30 @@ import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:project2/home/task_list/task_widget.dart';
 import 'package:project2/my_theme.dart';
+import 'package:project2/providers/app_config_provider.dart';
+import 'package:provider/provider.dart';
 
-class TaskListTab extends StatelessWidget {
+class TaskListTab extends StatefulWidget {
+  @override
+  State<TaskListTab> createState() => _TaskListTabState();
+}
+
+class _TaskListTabState extends State<TaskListTab> {
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<AppConfigProvider>(context);
+    if (provider.tasksList.isEmpty) {
+      provider.getAllTasksFromFireStore();
+    }
     return Column(
       children: [
         CalendarTimeline(
-          initialDate: DateTime.now(),
+          initialDate: provider.selectDate,
           firstDate: DateTime.now().subtract(Duration(days: 365)),
           lastDate: DateTime.now().add(Duration(days: 365)),
-          onDateSelected: (date) => print(date),
+          onDateSelected: (date) {
+            provider.changeSelectSate(date);
+          },
           leftMargin: 20,
           monthColor: MyTheme.blackColor,
           dayColor: MyTheme.blackColor,
@@ -25,9 +38,11 @@ class TaskListTab extends StatelessWidget {
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {
-              return TaskWidgetItem();
+              return TaskWidgetItem(
+                task: provider.tasksList[index],
+              );
             },
-            itemCount: 30,
+            itemCount: provider.tasksList.length,
           ),
         ),
       ],
