@@ -7,21 +7,18 @@ import 'package:provider/provider.dart';
 import '../../model/task.dart';
 import '../../my_theme.dart';
 import '../../providers/app_config_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../edit_task_screen.dart';
 
-class TaskWidgetItem extends StatefulWidget {
+class TaskWidgetItem extends StatelessWidget {
   Task task;
 
   TaskWidgetItem({required this.task});
 
   @override
-  State<TaskWidgetItem> createState() => _TaskWidgetItemState();
-}
-
-class _TaskWidgetItemState extends State<TaskWidgetItem> {
-  @override
   Widget build(BuildContext context) {
     var provider = Provider.of<AppConfigProvider>(context);
+    var authProvider = Provider.of<AuthProvider>(context);
     return Container(
       margin: EdgeInsets.all(12),
       child: Slidable(
@@ -33,10 +30,12 @@ class _TaskWidgetItemState extends State<TaskWidgetItem> {
             SlidableAction(
               onPressed: (context) {
                 //delete task
-                FirebaseUtils.deleteTaskFromFireStore(widget.task)
+                FirebaseUtils.deleteTaskFromFireStore(
+                        task, authProvider.currentUser!.id!)
                     .timeout(Duration(milliseconds: 500), onTimeout: () {
                   print('todo deleted successful');
-                  provider.getAllTasksFromFireStore();
+                  provider
+                      .getAllTasksFromFireStore(authProvider.currentUser!.id!);
                 });
               },
               borderRadius: BorderRadius.only(
@@ -75,7 +74,7 @@ class _TaskWidgetItemState extends State<TaskWidgetItem> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        widget.task.title ?? '',
+                        task.title ?? '',
                         style: Theme.of(context)
                             .textTheme
                             .titleSmall!
@@ -85,7 +84,7 @@ class _TaskWidgetItemState extends State<TaskWidgetItem> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        widget.task.description ?? '',
+                        task.description ?? '',
                         style: provider.isDarkMode()
                             ? Theme.of(context)
                                 .textTheme
@@ -105,71 +104,70 @@ class _TaskWidgetItemState extends State<TaskWidgetItem> {
                     borderRadius: BorderRadius.circular(15),
                     color: Theme.of(context).primaryColor,
                   ),
-                  child: InkWell(
-                    onTap: () {
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: provider.isDarkMode()
-                              ? MyTheme.blackColor
-                              : MyTheme.whiteColor,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              color: Theme.of(context).primaryColor,
-                              height: 80,
-                              width: 4,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      widget.task.title ?? '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(color: MyTheme.greenColor),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      widget.task.description ?? '',
-                                      style: provider.isDarkMode()
-                                          ? Theme.of(context)
-                                              .textTheme
-                                              .titleSmall!
-                                              .copyWith(
-                                                  color: MyTheme.greenColor)
-                                          : Theme.of(context)
-                                              .textTheme
-                                              .titleSmall,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.done,
-                              color: MyTheme.greenColor,
-                              size: 35,
-                            )
-                          ],
-                        ),
-                      );
-                      setState(() {});
-                    },
-                    child: Icon(
-                      Icons.check,
-                      color: MyTheme.whiteColor,
-                      size: 35,
-                    ),
+                  // child: InkWell(
+                  //   onTap: () {
+                  //     Container(
+                  //       padding: EdgeInsets.all(10),
+                  //       decoration: BoxDecoration(
+                  //         borderRadius: BorderRadius.circular(15),
+                  //         color: provider.isDarkMode()
+                  //             ? MyTheme.blackColor
+                  //             : MyTheme.whiteColor,
+                  //       ),
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Container(
+                  //             color: Theme.of(context).primaryColor,
+                  //             height: 80,
+                  //             width: 4,
+                  //           ),
+                  //           Expanded(
+                  //             child: Column(
+                  //               crossAxisAlignment: CrossAxisAlignment.start,
+                  //               children: [
+                  //                 Padding(
+                  //                   padding: const EdgeInsets.all(8.0),
+                  //                   child: Text(
+                  //                     task.title ?? '',
+                  //                     style: Theme.of(context)
+                  //                         .textTheme
+                  //                         .titleSmall!
+                  //                         .copyWith(color: MyTheme.greenColor),
+                  //                   ),
+                  //                 ),
+                  //                 Padding(
+                  //                   padding: const EdgeInsets.all(8.0),
+                  //                   child: Text(
+                  //                     task.description ?? '',
+                  //                     style: provider.isDarkMode()
+                  //                         ? Theme.of(context)
+                  //                             .textTheme
+                  //                             .titleSmall!
+                  //                             .copyWith(
+                  //                                 color: MyTheme.greenColor)
+                  //                         : Theme.of(context)
+                  //                             .textTheme
+                  //                             .titleSmall,
+                  //                   ),
+                  //                 )
+                  //               ],
+                  //             ),
+                  //           ),
+                  //           Icon(
+                  //             Icons.done,
+                  //             color: MyTheme.greenColor,
+                  //             size: 35,
+                  //           )
+                  //         ],
+                  //       ),
+                  //     );
+                  //
+                  //   },
+                  child: Icon(
+                    Icons.check,
+                    color: MyTheme.whiteColor,
+                    size: 35,
                   ),
                 ),
               ],

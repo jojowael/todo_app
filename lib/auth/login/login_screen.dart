@@ -1,11 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project2/auth/register/register_screen.dart';
 import 'package:project2/components/custom_text_form_field.dart';
+import 'package:project2/dialog_utils.dart';
+import 'package:project2/firebase_utils.dart';
+import 'package:provider/provider.dart';
 
-class LoginrScreen extends StatelessWidget {
+import '../../home/home_screen.dart';
+import '../../providers/auth_provider.dart';
+
+class LoginrScreen extends StatefulWidget {
   static const String routeName = 'login';
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+
+  @override
+  State<LoginrScreen> createState() => _LoginrScreenState();
+}
+
+class _LoginrScreenState extends State<LoginrScreen> {
+  var emailController = TextEditingController(text: 'amira@route.com');
+
+  var passwordController = TextEditingController(text: '123456');
+
   var formKey = GlobalKey<FormState>();
 
   @override
@@ -36,7 +51,7 @@ class LoginrScreen extends StatelessWidget {
                           return 'Please enter email asddress';
                         }
                         bool emailValid = RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                             .hasMatch(text);
                         if (!emailValid) {
                           return 'Please enter valid email';
@@ -104,9 +119,55 @@ class LoginrScreen extends StatelessWidget {
     );
   }
 
-  void login() {
+  void login() async {
     if (formKey.currentState?.validate() == true) {
-      //register
+      //Login
+      DialogUtils.showLoading(context, 'Loading...');
+      try {
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+        var user = await FirebaseUtils.readUserFromFireStore(
+            credential.user?.uid ?? "");
+        //user 3amal authentication bass matsaglsh fl firebase
+        if (user == null) {
+          return;
+        }
+        var authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.updateUser(user);
+        //todo:hide loading
+        DialogUtils.hideLoading(context);
+        //todo: show message
+        DialogUtils.showMessage(context, 'Login Successfully',
+            title: 'Success', posActionName: 'ok', posAction: () {
+          Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+        });
+        print(credential.user?.uid ?? "");
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          //todo:hide loading
+          DialogUtils.hideLoading(context);
+          //todo: show message
+          DialogUtils.showMessage(context, 'No user found for that email.',
+              title: 'Error', posActionName: 'ok');
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          //todo:hide loading
+          DialogUtils.hideLoading(context);
+          //todo: show message
+          DialogUtils.showMessage(
+              context, 'Wrong password provided for that user.',
+              title: 'Error', posActionName: 'ok');
+          print('Wrong password provided for that user.');
+        }
+      } catch (e) {
+        //todo:hide loading
+        DialogUtils.hideLoading(context);
+        //todo: show message
+        DialogUtils.showMessage(context, '${e.toString()}',
+            title: 'Error', posActionName: 'ok');
+        print(e.toString());
+      }
     }
   }
 }
