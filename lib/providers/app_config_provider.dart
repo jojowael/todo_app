@@ -10,9 +10,9 @@ class AppConfigProvider extends ChangeNotifier {
   List<Task> tasksList = [];
   DateTime selectDate = DateTime.now();
 
-  void getAllTasksFromFireStore() async {
+  void getAllTasksFromFireStore(String uId) async {
     QuerySnapshot<Task> querySnapshot =
-        await FirebaseUtils.getTasksCollection().get();
+        await FirebaseUtils.getTasksCollection(uId).get();
     //list<QueryDocumentsSnapshots<Task>>=>3ayz a7awelha lai List<Task>
     //gbt list al tasks al fl firebase 7ateitha 3andy fl UI
     tasksList = querySnapshot.docs.map((doc) {
@@ -38,9 +38,9 @@ class AppConfigProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectSate(DateTime newDate) {
+  void changeSelectSate(DateTime newDate, String uId) {
     selectDate = newDate;
-    getAllTasksFromFireStore();
+    getAllTasksFromFireStore(uId);
   }
 
   void changeTheme(ThemeMode newMode) {

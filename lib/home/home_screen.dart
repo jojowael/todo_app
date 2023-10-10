@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:project2/auth/login/login_screen.dart';
 import 'package:project2/home/settings/settings_list_tab.dart';
 import 'package:project2/home/task_list/add_task_bottom_sheet.dart';
 import 'package:project2/home/task_list/task_list_tab.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/app_config_provider.dart';
+import '../providers/auth_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = 'home_screen';
@@ -19,13 +21,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthProvider>(
+      context,
+    );
     var provider = Provider.of<AppConfigProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.toDoList,
+          "ToDoList  ${authProvider.currentUser!.name},",
+          //AppLocalizations.of(context)!.toDoList
           style: Theme.of(context).textTheme.titleLarge,
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                provider.tasksList = [];
+                authProvider.currentUser = null;
+                Navigator.pushReplacementNamed(context, LoginrScreen.routeName);
+              },
+              icon: Icon(Icons.logout))
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
