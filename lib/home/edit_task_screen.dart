@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:project2/firebase_utils.dart';
 import 'package:project2/my_theme.dart';
 import 'package:project2/providers/app_config_provider.dart';
+import 'package:project2/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../model/task.dart';
 
 class EditTaskScreen extends StatefulWidget {
   static const String routeName = 'edit_task_screen';
@@ -13,13 +17,27 @@ class EditTaskScreen extends StatefulWidget {
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   DateTime selectedDate = DateTime.now();
-
   var formKey = GlobalKey<FormState>();
+  late AppConfigProvider provider;
+  var titlecontroller = TextEditingController();
+  var desccontroller = TextEditingController();
+  String task = '';
+  String desc = '';
+
+  // Task? task;
 
   @override
   Widget build(BuildContext context) {
+    var authprovider = Provider.of<AuthProvider>(context);
+    Task passedTask = ModalRoute.of(context)?.settings.arguments as Task;
+    // if (task == null) {
+    //   var task = ModalRoute.of(context)?.settings.arguments as Task;
+    titlecontroller.text = passedTask.title ?? '';
+    desccontroller.text = passedTask.description ?? '';
+    selectedDate = passedTask.dateTime!;
     var provider = Provider.of<AppConfigProvider>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.toDoList,
@@ -33,7 +51,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
         decoration: BoxDecoration(
             color:
-                provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
+            provider.isDarkMode() ? MyTheme.blackColor : MyTheme.whiteColor,
             borderRadius: BorderRadius.circular(15)),
         padding: EdgeInsets.all(12),
         child: SingleChildScrollView(
@@ -45,9 +63,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   AppLocalizations.of(context)!.edit_task,
                   style: provider.isDarkMode()
                       ? Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(color: MyTheme.whiteColor)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: MyTheme.whiteColor)
                       : Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -68,12 +86,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           },
                           decoration: InputDecoration(
                             hintText:
-                                AppLocalizations.of(context)!.this_is_title,
+                            AppLocalizations.of(context)!.this_is_title,
                             hintStyle: provider.isDarkMode()
                                 ? Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(color: MyTheme.whiteColor)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(color: MyTheme.whiteColor)
                                 : Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -90,12 +108,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           },
                           decoration: InputDecoration(
                             hintText:
-                                AppLocalizations.of(context)!.task_details,
+                            AppLocalizations.of(context)!.task_details,
                             hintStyle: provider.isDarkMode()
                                 ? Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(color: MyTheme.whiteColor)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(color: MyTheme.whiteColor)
                                 : Theme.of(context).textTheme.titleSmall,
                           ),
                           maxLines: 4,
@@ -107,9 +125,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           AppLocalizations.of(context)!.select_Date,
                           style: provider.isDarkMode()
                               ? Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(color: MyTheme.whiteColor)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: MyTheme.whiteColor)
                               : Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
@@ -145,7 +163,33 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                               color: MyTheme.primaryLight),
                           child: TextButton(
                               onPressed: () {
-                                addTask();
+                                if (task != "") {
+                                  FirebaseUtils.getTasksCollection(
+                                          authprovider.currentUser?.id ?? "")
+                                      .doc(passedTask.id)
+                                      .update({"title": task}).timeout(
+                                          Duration(milliseconds: 500));
+                                }
+                                if (desc != "") {
+                                  FirebaseUtils.getTasksCollection(
+                                          authprovider.currentUser?.id ?? "")
+                                      .doc(passedTask.id)
+                                      .update({"desc": desc}).timeout(
+                                          Duration(milliseconds: 500));
+                                }
+                                if (selectedDate?.millisecondsSinceEpoch !=
+                                    passedTask.dateTime) {
+                                  FirebaseUtils.getTasksCollection(
+                                          authprovider.currentUser?.id ?? "")
+                                      .doc(passedTask.id)
+                                      .update({
+                                    "dateTime":
+                                        selectedDate?.millisecondsSinceEpoch
+                                  }).timeout(Duration(milliseconds: 500));
+                                }
+                                provider.getAllTasksFromFireStore(
+                                    authprovider.currentUser?.id ?? "");
+                                Navigator.pop(context);
                               },
                               child: Text(
                                 AppLocalizations.of(context)!.save_changes,
@@ -173,13 +217,27 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         lastDate: DateTime.now().add(Duration(days: 365)));
     if (chosenDate != null) {
       selectedDate = chosenDate;
-      setState(() {});
+      // t.dateTime = selectedDate;
     }
-  }
-
-  void addTask() {
-    if (formKey.currentState?.validate() == true) {
-      //add task to firebase
-    }
+    setState(() {});
   }
 }
+
+// void editTask() {
+//   if (formKey.currentState?.validate() == true) {
+//     task?.title = titlecontroller.text;
+//     task?.description = desccontroller.text;
+//     task?.dateTime = selectedDate;
+//     var authProvider = Provider.of<AuthProvider>(context, listen: false);
+//     DialogUtils.showLoading(context, 'loading...');
+//
+//     FirebaseUtils.editTask(task!, authProvider.currentUser!.id!)
+//         .then((value) {
+//       DialogUtils.hideLoading(context);
+//     }).timeout(Duration(milliseconds: 500), onTimeout: () {
+//       print('success');
+//       provider.getAllTasksFromFireStore(authProvider.currentUser!.id!);
+//       Navigator.pop(context);
+//     });
+//   }
+//   }
